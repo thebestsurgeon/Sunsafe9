@@ -1,0 +1,16 @@
+{
+  "name": "SunSafe - Health Intelligence",
+  "short_name": "SunSafe",
+  "description": "Live location-based health tracking with local saving and English voice AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAFBFF",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/869/869869.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
