@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SunSafe — Health Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F172A">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-left">
+    <div class="logo">☀️</div>
+    <h1>SunSafe</h1>
+    <nav class="nav-links">
+      <a href="#" class="active" onclick="goHome(this)">Home</a>
+      <a href="#" onclick="showTab('sun',null);setNav(this)">Sun</a>
+      <a href="#" onclick="showTab('kidney',null);setNav(this)">Kidney</a>
+      <a href="#" onclick="showTab('asthma',null);setNav(this)">Breathing</a>
+      <a href="#" onclick="showTab('water',null);setNav(this)">Water</a>
+      <a href="#" onclick="showTab('myhealth',null);setNav(this)">📊 My Health</a>
+    </nav>
+  </div>
+  <div class="nav-right">
+    <span id="location" class="loc">📍 Detecting...</span>
+  </div>
+</header>
+
+<section class="landing" id="homeSection">
+  <div class="landing-content">
+    <span class="kicker">HEALTH INTELLIGENCE PLATFORM</span>
+    <h2>Stay safe under the sun,<br>every day.</h2>
+    <p>SunSafe uses your real location for live UV and saves your health data locally on your device.</p>
+    <div class="landing-stats">
+      <div><strong id="statSafe">☀️ -- min</strong><span id="statSafeSub">Safe limit — allow location</span></div>
+      <div><strong id="statWater">💧 2.8L</strong><span>Water goal</span></div>
+      <div><strong>🌍 Live</strong><span id="statLocation">Using your GPS</span></div>
+    </div>
+    <button class="btn primary large mt-3" onclick="requestLocation()">📍 Use My Location for Accurate UV</button>
+  </div>
+  <div class="landing-visual">
+    <div class="mini-card blue"><span>UV INDEX • LIVE</span><strong id="uvValTop">--</strong><small id="uvLabelTop" class="status-danger">Fetching...</small></div>
+    <div class="mini-card"><span>TEMP • LIVE</span><strong id="tempValTop">--</strong><small>Your location</small></div>
+    <div class="mini-card"><span>HUMIDITY • LIVE</span><strong id="humValTop">--</strong><small>Live</small></div>
+  </div>
+</section>
+
+<main class="main">
+<section class="hero">
+  <div class="hero-card uv-card">
+    <div class="card-head"><span class="eyebrow">UV INDEX • LIVE FROM YOUR LOCATION</span><span class="badge danger" id="uvBadge">Fetching</span></div>
+    <div class="big-row"><div class="big" id="uvVal">--</div><div class="big-sub">WHO Scale 0-11+<br><span id="uvLocationInfo">Waiting for GPS...</span></div></div>
+    <div class="progress-line"><div id="uvBar" style="width:0%"></div></div>
+    <div id="aiUvPred" class="alert-box neutral">📍 Allow location to get real UV and personalized safe time.</div>
+  </div>
+  <div class="hero-grid">
+    <div class="hero-card"><span class="eyebrow">TEMPERATURE</span><div class="big" id="tempVal">--</div><span class="sub" id="aiTempPred">Live from your area</span></div>
+    <div class="hero-card"><span class="eyebrow">HUMIDITY</span><div class="big" id="humVal">--</div><span class="sub">Live from your area</span></div>
+  </div>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" id="tabBtn-sun" onclick="showTab('sun',this)">☀️ Sun</button>
+  <button class="tab" id="tabBtn-kidney" onclick="showTab('kidney',this)">💙 Kidney</button>
+  <button class="tab" id="tabBtn-asthma" onclick="showTab('asthma',this)">🌿 Breathing</button>
+  <button class="tab" id="tabBtn-water" onclick="showTab('water',this)">💧 Water</button>
+  <button class="tab" id="tabBtn-myhealth" onclick="showTab('myhealth',this)">📊 My Health</button>
+</nav>
+
+<div id="tab-sun" class="tab-pane">
+  <div class="card">
+    <div class="card-head"><h3>☀️ Sun Tracker — Personalized</h3><span class="badge blue" id="safeTimeBadge">Safe: -- min</span></div>
+    <div class="timer-wrap"><div id="timerRing" class="ring"></div><div class="timer-center"><div id="timerDisplay">00:00</div><p id="timerInfo">Waiting for location</p></div></div>
+    <div class="progress-line"><div id="timerBar"></div></div>
+    <div id="aiPrediction" class="alert-box neutral">Allow location to calculate real safe time.</div>
+    <div class="action-row"><button id="sunBtn" class="btn primary" onclick="toggleSun()">Start Monitoring</button><button class="btn ghost" onclick="resetTimer()">Reset</button></div>
+    <button class="btn primary w-full mt-3" onclick="saveHealthData()">💾 Save My Sun Data</button>
+  </div>
+</div>
+
+<div id="tab-kidney" class="tab-pane hidden">
+  <div class="card soft-blue">
+    <div class="card-head"><h3>💙 Kidney Health</h3><span class="badge blue">AI Model</span></div>
+    <p class="small">Uses live temp + your saved data.</p>
+    <div class="score-box"><div><span>STRESS SCORE</span><strong id="kidneyScore">--/100</strong><span id="kidneyPred">Waiting...</span></div><div id="kidneyCircle" class="circle">--</div></div>
+  </div>
+  <div class="card">
+    <h4>Urine Color</h4>
+    <div class="urine-grid">
+      <button class="urine" style="background:#FFFDE7" onclick="setUrine('Clear - Overhydrated',90)"></button>
+      <button class="urine active" style="background:#FFF9C4" onclick="setUrine('Pale Yellow - Perfect',20)"></button>
+      <button class="urine" style="background:#FFEB3B" onclick="setUrine('Yellow - Drink Soon',50)"></button>
+      <button class="urine" style="background:#FBC02D" onclick="setUrine('Dark Yellow - Dehydrated!',80)"></button>
+      <button class="urine" style="background:#FF8F00" onclick="setUrine('Amber - Severe!',95)"></button>
+      <button class="urine" style="background:#5D4037" onclick="setUrine('Brown - See Doctor!',100)"></button>
+    </div>
+    <div id="urineStatus" class="alert-box success">✅ Pale Yellow — Well hydrated!</div>
+  </div>
+  <div id="kidneyAlerts"></div>
+  <div class="card">
+    <h4>Symptoms</h4>
+    <div class="checks"><label><input type="checkbox" id="swelling"> Swelling feet</label><label><input type="checkbox" id="fatigue"> Fatigue</label><label><input type="checkbox" id="pain"> Back pain</label><label><input type="checkbox" id="nausea"> Nausea</label></div>
+    <div class="action-row mt-3"><button class="btn primary" onclick="checkKidney()">Analyze</button><button class="btn ghost" onclick="saveHealthData()">💾 Save</button></div>
+  </div>
+</div>
+
+<div id="tab-asthma" class="tab-pane hidden">
+  <div class="card soft-green">
+    <div class="card-head"><h3>🌿 Breathing & Air — Live</h3><span class="badge danger" id="aqiBadge">Fetching</span></div>
+    <p class="small" id="asthmaAiForecast">Live air quality...</p>
+    <div class="air-grid"><div class="air-box"><span>AQI Est.</span><strong id="aqiVal">--</strong><small id="aqiLabel">--</small></div><div class="air-box"><span>PM2.5</span><strong id="pm25">--</strong></div><div class="air-box"><span>PM10</span><strong id="pm10">--</strong></div><div class="air-box"><span>O₃</span><strong id="o3">--</strong></div></div>
+  </div>
+  <div class="card"><h4>Triggers</h4><div id="asthmaTriggers" class="trigger-list"></div><div id="asthmaAlert" class="alert-box hidden"></div><button class="btn primary w-full mt-3" onclick="saveHealthData()">💾 Save Breathing Data</button></div>
+</div>
+
+<div id="tab-water" class="tab-pane hidden">
+  <div class="card center soft-blue"><h3>💧 Hydration</h3><div class="big" id="waterDisplay">1200 / 2800 ml</div><div class="progress-line"><div id="waterBar" style="width:42%"></div></div><div id="waterAi" class="alert-box warning mt-3">Your water need adjusts to live temp.</div></div>
+  <div class="grid2"><button class="card btn-card" onclick="addWater(250)">🥤 +250ml</button><button class="card btn-card primary-card" onclick="addWater(500)">🍶 +500ml</button></div>
+  <button class="btn primary w-full mt-3" onclick="saveHealthData()">💾 Save Water Intake</button>
+</div>
+
+<div id="tab-myhealth" class="tab-pane hidden">
+  <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:white;border:none">
+    <div class="card-head"><h3 style="color:white">📊 My Health Dashboard</h3><span class="badge blue">Saved Locally</span></div>
+    <p class="small" style="color:#94A3B8">Your health data is saved on this device. Private and secure.</p>
+    <div class="grid2 mt-3" style="gap:12px">
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px"><span style="font-size:11px;opacity:.7">TOTAL WATER TODAY</span><strong id="myWater" style="display:block;font-size:22px;margin-top:4px">0 ml</strong></div>
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px"><span style="font-size:11px;opacity:.7">SUN EXPOSURE</span><strong id="mySun" style="display:block;font-size:22px;margin-top:4px">0 min</strong></div>
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px"><span style="font-size:11px;opacity:.7">LAST URINE</span><strong id="myUrine" style="display:block;font-size:14px;margin-top:4px">--</strong></div>
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px"><span style="font-size:11px;opacity:.7">KIDNEY SCORE</span><strong id="myKidney" style="display:block;font-size:22px;margin-top:4px">--</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>📝 Health History</h3><button class="btn ghost" style="flex:none;padding:8px 12px" onclick="clearMyHistory()">Clear</button></div>
+    <div id="historyList" class="trigger-list"></div>
+    <p class="small mt-3" id="historyEmpty">No saved data yet. Tap 💾 Save on any page.</p>
+  </div>
+  <div class="card soft-blue">
+    <h4>Export / Share</h4>
+    <p class="small">Download your health data as JSON for your doctor or demo.</p>
+    <div class="action-row mt-3"><button class="btn primary" onclick="exportData()">📥 Export My Data</button><button class="btn ghost" onclick="saveHealthData()">💾 Save Now</button></div>
+  </div>
+</div>
+
+<div class="chat-widget">
+  <div class="chat-header" onclick="toggleChat()">🤖 SunSafe AI — English <span id="chatToggle">▲</span><span class="status-dot good"></span></div>
+  <div id="chatBody" class="chat-body">
+    <div id="chatBox" class="chat-box"><div class="msg ai">Hi! I'm SunSafe AI. I use your real location for UV and weather. Tap 🎤 and ask in English.</div></div>
+    <div class="chat-input-row">
+      <input id="userQ" placeholder="Ask in English..." onkeydown="if(event.key==='Enter')askAI()">
+      <button onclick="askAI()">Send</button>
+      <button id="micBtn" onclick="startVoice()" style="background:#EF4444;width:48px">🎤</button>
+      <button id="speakBtn" onclick="toggleSpeech()" style="background:#16A34A;width:48px">🔊</button>
+    </div>
+    <div id="voiceStatus" style="text-align:center;font-size:11px;color:#6B7280;padding:6px;display:none">Listening in English...</div>
+  </div>
+</div>
+</main>
+
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+<script src="script.js"></script>
+</body>
+                                                                                                              </html>
